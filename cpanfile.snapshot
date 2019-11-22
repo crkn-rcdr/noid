@@ -416,6 +416,13 @@ DISTRIBUTIONS
       perl 5.008001
       strict 0
       warnings 0
+  ExportTo-0.03
+    pathname: K/KT/KTAT/ExportTo-0.03.tar.gz
+    provides:
+      ExportTo 0.03
+    requirements:
+      ExtUtils::MakeMaker 0
+      Test::More 0
   Exporter-Tiny-1.002001
     pathname: T/TO/TOBYINK/Exporter-Tiny-1.002001.tar.gz
     provides:
@@ -714,6 +721,37 @@ DISTRIBUTIONS
       Scalar::Util 0
       perl 5.006002
       strict 0
+  List-MoreUtils-0.428
+    pathname: R/RE/REHSACK/List-MoreUtils-0.428.tar.gz
+    provides:
+      List::MoreUtils 0.428
+      List::MoreUtils::PP 0.428
+    requirements:
+      Exporter::Tiny 0.038
+      ExtUtils::MakeMaker 0
+      List::MoreUtils::XS 0.426
+  List-MoreUtils-XS-0.428
+    pathname: R/RE/REHSACK/List-MoreUtils-XS-0.428.tar.gz
+    provides:
+      List::MoreUtils::XS 0.428
+    requirements:
+      Carp 0
+      ExtUtils::MakeMaker 0
+      File::Basename 0
+      File::Copy 0
+      File::Path 0
+      File::Spec 0
+      IPC::Cmd 0
+      XSLoader 0.22
+      base 0
+  List-Pairwise-1.03
+    pathname: T/TD/TDRUGEON/List-Pairwise-1.03.tar.gz
+    provides:
+      List::Pairwise 1.03
+    requirements:
+      ExtUtils::MakeMaker 6.59
+      Test::More 0.42
+      perl 5.006
   Module-Build-0.4229
     pathname: L/LE/LEONT/Module-Build-0.4229.tar.gz
     provides:
@@ -898,6 +936,11 @@ DISTRIBUTIONS
       Getopt::Long 0
       Sys::Hostname 0
       Text::ParseWords 0
+  Number-Misc-1.2
+    pathname: M/MI/MIKO/Number-Misc-1.2.tar.gz
+    provides:
+      Number::Misc 1.2
+    requirements:
   POSIX-strftime-Compiler-0.42
     pathname: K/KA/KAZEBURO/POSIX-strftime-Compiler-0.42.tar.gz
     provides:
@@ -1174,6 +1217,13 @@ DISTRIBUTIONS
     requirements:
       ExtUtils::MakeMaker 6.30
       IO::File 1.14
+  String-CamelCase-0.04
+    pathname: H/HI/HIO/String-CamelCase-0.04.tar.gz
+    provides:
+      String::CamelCase 0.04
+    requirements:
+      ExtUtils::MakeMaker 0
+      Test::More 0
   String-RewritePrefix-0.007
     pathname: R/RJ/RJBS/String-RewritePrefix-0.007.tar.gz
     provides:
@@ -1184,6 +1234,13 @@ DISTRIBUTIONS
       Sub::Exporter 0.972
       strict 0
       warnings 0
+  String-Util-1.26
+    pathname: M/MI/MIKO/String-Util-1.26.tar.gz
+    provides:
+      String::Util 1.26
+    requirements:
+      Number::Misc 1.2
+      Test::Toolbox 0.2
   Sub-Exporter-0.987
     pathname: R/RJ/RJBS/Sub-Exporter-0.987.tar.gz
     provides:
@@ -1441,6 +1498,11 @@ DISTRIBUTIONS
       Test::SharedFork 0.29
       Time::HiRes 0
       perl 5.008001
+  Test-Toolbox-0.4
+    pathname: M/MI/MIKO/Test-Toolbox-0.4.tar.gz
+    provides:
+      Test::Toolbox 0.4
+    requirements:
   Test-Warn-0.36
     pathname: B/BI/BIGJ/Test-Warn-0.36.tar.gz
     provides:
@@ -1584,6 +1646,25 @@ DISTRIBUTIONS
       strict 0
       utf8 0
       warnings 0
+  Util-Any-0.25
+    pathname: K/KT/KTAT/Util-Any-0.25.tar.gz
+    provides:
+      Util::Any 0.25
+    requirements:
+      Clone 0
+      Data::Dumper 0
+      ExportTo 0
+      ExtUtils::MakeMaker 0
+      Hash::Util 0
+      List::MoreUtils 0
+      List::Pairwise 0
+      List::Util 0
+      Module::Build 0.38
+      Module::Pluggable 0
+      Scalar::Util 0
+      String::CamelCase 0
+      String::Util 0
+      Test::More 0.88
   WWW-Form-UrlEncoded-0.26
     pathname: K/KA/KAZEBURO/WWW-Form-UrlEncoded-0.26.tar.gz
     provides:

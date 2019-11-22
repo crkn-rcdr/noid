@@ -12,7 +12,7 @@ If you need to change the default config, you can find consulted environment var
 
 ### `POST /mint/:number/:type`
 
-Mints noids. `:number` is the number of noids you want, and `:type` can be one of `manifest`, `manifests`, `canvas`, `canvases`. e.g. `POST /mint/5/canvases`. It's a valid English sentence, and you'll get back results that look like:
+Mints noids. `:number` is the number of noids you want, and `:type` can be one of `collection`, `collections`, `manifest`, `manifests`, `canvas`, `canvases`. e.g. `POST /mint/5/canvases`. It's a valid English sentence, and you'll get back results that look like:
 
 ```
 "ids": [

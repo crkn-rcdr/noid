@@ -5,6 +5,7 @@ use Dancer2;
 use Noid;
 use File::Copy qw/move/;
 use Scalar::Util qw/looks_like_number/;
+use Util::Any -list => ['none'];
 
 my $NOID_DIR = $ENV{'NOID_DIR'} || '/noid/dbs';
 my $NAAN     = $ENV{'NAAN'}     || '69429';
@@ -12,6 +13,15 @@ my $NAA      = $ENV{'NAA'}      || 'CRKN';
 my $SUBNAA   = $ENV{'SUBNAA'}   || 'Platform';
 my $CONTACT  = $ENV{'CONTACT'}  || 'smelter';
 my $TEMPLATE = $ENV{'TEMPLATE'} || 'reedeedeedk';
+
+my %prefixes = (
+  manifest    => 'm',
+  manifests   => 'm',
+  canvas      => 'c',
+  canvases    => 'c',
+  collection  => 's',
+  collections => 's'
+);
 
 chdir($NOID_DIR);
 
@@ -21,8 +31,9 @@ set show_errors => 0;
 
 get '/' => sub {
   return {
-    manifest => ( glob('m*') )[-1] || 'none',
-    canvas   => ( glob('c*') )[-1] || 'none'
+    collection => ( glob('s*') )[-1] || 'none',
+    manifest   => ( glob('m*') )[-1] || 'none',
+    canvas     => ( glob('c*') )[-1] || 'none'
   };
 };
 
@@ -84,18 +95,17 @@ sub mint {
 
 post '/mint/:number/:type' => sub {
   my $type = route_parameters->get('type');
-  if ( $type ne 'manifests' &&
-    $type ne 'manifest' &&
-    $type ne 'canvases' &&
-    $type ne 'canvas' ) {
+  if ( none { $type eq $_ } keys %prefixes ) {
     status 400;
-    return { error => "Can only mint 'manifests' or 'canvases'." };
+    return {
+      error => "Can only mint 'collections', 'manifests', or 'canvases'."
+    };
   }
   my $n       = route_parameters->get('number');
   my $number  = looks_like_number($n) ? abs( int($n) ) : 0;
   my $contact = request_header('X-Noid-Contact') || $CONTACT;
 
-  my $result = mint( substr( $type, 0, 1 ), $number, $contact );
+  my $result = mint( $prefixes{$type}, $number, $contact );
 
   if ( $result->{error} ) {
     status 500;
