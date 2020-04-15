@@ -90,6 +90,8 @@ sub mint {
     $n--;
   }
 
+  Noid::dbclose($noid);
+
   return { ids => \@ids };
 }
 
