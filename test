@@ -1,0 +1,29 @@
+#!/bin/bash
+
+docker build -t noid . && (
+  PID=$(docker run -d -v "/tmp/noidtest.$$:/noid/dbs" -p 3000:3000 noid)
+
+  echo "PID is: $PID -- waiting a bit for launch"
+  sleep 5
+
+  echo "5 canvases"
+  curl -X POST "localhost:3000/mint/5/canvases"
+  echo
+
+  echo "2 collections"
+  curl -X POST "localhost:3000/mint/2/collections"
+  echo
+
+  echo "3 manifests"
+  curl -X POST "localhost:3000/mint/3/manifests"
+  echo
+
+  echo "4 Generic noids"
+  curl -X POST "localhost:3000/mint/4/generic"
+  echo
+
+
+  #docker logs $PID
+  docker stop $PID
+)
+

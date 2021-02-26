@@ -15,12 +15,13 @@ my $CONTACT  = $ENV{'CONTACT'}  || 'smelter';
 my $TEMPLATE = $ENV{'TEMPLATE'} || 'reedeedeedk';
 
 my %prefixes = (
-  manifest    => 'm',
-  manifests   => 'm',
-  canvas      => 'c',
-  canvases    => 'c',
-  collection  => 's',
-  collections => 's'
+    generic      => 'g',
+    canvas      => 'c',
+    canvases    => 'c',
+    collection  => 's',
+    collections => 's',
+    manifest    => 'm',
+    manifests   => 'm',
 );
 
 chdir($NOID_DIR);
@@ -30,91 +31,97 @@ set serializer  => 'JSON';
 set show_errors => 0;
 
 get '/' => sub {
-  return {
-    collection => ( glob('s*') )[-1] || 'none',
-    manifest   => ( glob('m*') )[-1] || 'none',
-    canvas     => ( glob('c*') )[-1] || 'none'
-  };
+    return {
+        generic     => ( glob('g*') )[-1] || 'none',
+        canvas     => ( glob('c*') )[-1] || 'none',
+        collection => ( glob('s*') )[-1] || 'none',
+        manifest   => ( glob('m*') )[-1] || 'none',
+    };
 };
 
 sub create_db {
-  my ( $contact, $template ) = @_;
-  my $report = Noid::dbcreate( $NOID_DIR, $contact,
-    $template, 'long', $NAAN, $NAA, $SUBNAA );
+    my ( $contact, $template ) = @_;
+    my $report =
+      Noid::dbcreate( $NOID_DIR, $contact, $template, 'long', $NAAN, $NAA,
+        $SUBNAA );
 
-  return { error => Noid::errmsg( undef, 1 ) } unless $report;
+    return { error => Noid::errmsg( undef, 1 ) } unless $report;
 
-  my ($prefix) = ( $template =~ /(.+)\./ );
-  my $new_dir = $prefix;
-  mkdir($new_dir);
-  move( 'NOID', "$new_dir/NOID" );
+    my ($prefix) = ( $template =~ /(.+)\./ );
+    my $new_dir = $prefix;
+    mkdir($new_dir);
+    move( 'NOID', "$new_dir/NOID" );
 
-  return { name => $new_dir };
+    return { name => $new_dir };
 }
 
 sub mint {
-  my ( $prefix, $n, $contact ) = @_;
-  my @dbs = sort {
-    int( ( $b =~ /$prefix(\d+)/ )[0] ) <=> int( ( $a =~ /$prefix(\d+)/ )[0] )
-  } glob("$prefix*");
-  my $dbname = $dbs[0] || $prefix . '0';
-  unless ( -d $dbname ) {
-    my $r = create_db( $contact, "$dbname.$TEMPLATE" );
-    return $r if $r->{error};
-    $dbname = $r->{name};
-  }
-
-  my $noid = Noid::dbopen( $dbname . '/NOID/noid.bdb', 0 );
-  return { error => Noid::errmsg( undef, 1 ) } unless $noid;
-
-  my @ids;
-  my $id = undef;
-  while ( $n > 0 ) {
-    while ( !defined( $id = Noid::mint( $noid, $contact ) ) ) {
-      my $error = Noid::errmsg( $noid, 1 );
-      if ( $error =~ /exhausted/ ) {
-        Noid::dbclose($noid);
-        my $newdbname =
-          $prefix . ( int( ( $dbname =~ /$prefix(\d+)/ )[0] ) + 1 );
-        my $newdb = create_db( $contact, "$newdbname.$TEMPLATE" );
-        return $newdb if $newdb->{error};
-        $noid = Noid::dbopen( $newdb->{name} . '/NOID/noid.bdb', 0 );
-        return { error => Noid::errmsg( undef, 1 ) } unless $noid;
-      } else {
-        return { error => $error };
-      }
+    my ( $prefix, $n, $contact ) = @_;
+    my @dbs = sort {
+        int(   ( $b =~ /$prefix(\d+)/ )[0] ) <=>
+          int( ( $a =~ /$prefix(\d+)/ )[0] )
+    } glob("$prefix*");
+    my $dbname = $dbs[0] || $prefix . '0';
+    unless ( -d $dbname ) {
+        my $r = create_db( $contact, "$dbname.$TEMPLATE" );
+        return $r if $r->{error};
+        $dbname = $r->{name};
     }
 
-    push @ids, $id;
-    $id = undef;
-    $n--;
-  }
+    my $noid = Noid::dbopen( $dbname . '/NOID/noid.bdb', 0 );
+    return { error => Noid::errmsg( undef, 1 ) } unless $noid;
 
-  Noid::dbclose($noid);
+    my @ids;
+    my $id = undef;
+    while ( $n > 0 ) {
+        while ( !defined( $id = Noid::mint( $noid, $contact ) ) ) {
+            my $error = Noid::errmsg( $noid, 1 );
+            if ( $error =~ /exhausted/ ) {
+                Noid::dbclose($noid);
+                my $newdbname =
+                  $prefix . ( int( ( $dbname =~ /$prefix(\d+)/ )[0] ) + 1 );
+                my $newdb = create_db( $contact, "$newdbname.$TEMPLATE" );
+                return $newdb if $newdb->{error};
+                $noid = Noid::dbopen( $newdb->{name} . '/NOID/noid.bdb', 0 );
+                return { error => Noid::errmsg( undef, 1 ) } unless $noid;
+            }
+            else {
+                return { error => $error };
+            }
+        }
 
-  return { ids => \@ids };
+        push @ids, $id;
+        $id = undef;
+        $n--;
+    }
+
+    Noid::dbclose($noid);
+
+    return { ids => \@ids };
 }
 
 post '/mint/:number/:type' => sub {
-  my $type = route_parameters->get('type');
-  if ( none { $type eq $_ } keys %prefixes ) {
-    status 400;
-    return {
-      error => "Can only mint 'collections', 'manifests', or 'canvases'."
-    };
-  }
-  my $n       = route_parameters->get('number');
-  my $number  = looks_like_number($n) ? abs( int($n) ) : 0;
-  my $contact = request_header('X-Noid-Contact') || $CONTACT;
+    my $type = route_parameters->get('type');
+    if ( none { $type eq $_ } keys %prefixes ) {
+        status 400;
+        return { error =>
+"Can only mint 'generic', 'canvases', 'collections', or 'manifests'."
+        };
+    }
 
-  my $result = mint( $prefixes{$type}, $number, $contact );
+    my $n       = route_parameters->get('number');
+    my $number  = looks_like_number($n) ? abs( int($n) ) : 0;
+    my $contact = request_header('X-Noid-Contact') || $CONTACT;
 
-  if ( $result->{error} ) {
-    status 500;
-    return { error => $result->{error} };
-  } else {
-    return { ids => $result->{ids} };
-  }
+    my $result = mint( $prefixes{$type}, $number, $contact );
+
+    if ( $result->{error} ) {
+        status 500;
+        return { error => $result->{error} };
+    }
+    else {
+        return { ids => $result->{ids} };
+    }
 };
 
 __PACKAGE__->to_app;
