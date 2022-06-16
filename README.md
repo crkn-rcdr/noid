@@ -1,6 +1,11 @@
 # noid
 
-A webservice and Docker image for minting [NOID](https://metacpan.org/pod/distribution/Noid/noid)s.
+A webservice and Docker image for minting NOIDs
+
+* [NOID: Nice Opaque IDentifier (minter and name resolver)](https://n2t.net/e/noid.html)
+* [NOID CPAN module](https://metacpan.org/pod/distribution/Noid/noid)
+* CRKN's Name Assigning Authority Number (NAAN) is 69429  (See: [NAAN Registry](https://n2t.net/e/pub/naan_registry.txt))
+* This is used as part of an [Archival Resource Key (ARK)](https://arks.org/about/)
 
 ## Installation
 
